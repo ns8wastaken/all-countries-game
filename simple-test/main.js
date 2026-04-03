@@ -1,9 +1,6 @@
 // Natural Earth 50m
 const DATA_URL = 'https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_50m_admin_0_countries.geojson';
 
-// The property key for sovereign state name in the Natural Earth dataset
-const NAME_PROP = 'ADMIN';
-
 // Aliases -> canonical name as it appears in the Natural Earth ADMIN field
 const ALIASES = {
     'united states': 'United States of America',
