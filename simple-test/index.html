@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Country Guesser</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <header>
+            <h1>Country Guesser</h1>
+        </header>
+
+        <div class="hud">
+            <input
+                type="text"
+                id="country-input"
+                placeholder="type a country name..."
+                autocomplete="off"
+                spellcheck="false"
+                disabled
+            >
+            <div class="stat">Found<strong id="count">0</strong></div>
+            <div class="stat">Total<strong id="total">—</strong></div>
+            <button id="give-up-btn" disabled>Give up</button>
+            <button id="reset-btn" disabled>Reset</button>
+        </div>
+
+        <div id="feedback"></div>
+
+        <div class="main-layout">
+            <div class="canvas-wrap">
+                <canvas id="map"></canvas>
+                <div id="loading">loading map...</div>
+            </div>
+
+            <div id="hint">scroll to zoom &nbsp;·&nbsp; drag to pan</div>
+
+            <div class="continent-panel" id="continent-panel"></div>
+        </div>
+
+        <script src="countries.js"></script>
+        <script src="main.js"></script>
+    </body>
+</html>
