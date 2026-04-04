@@ -1,6 +1,15 @@
 <script lang='ts'>
-    import Hud from "./lib/Hud.svelte";
-    import MainLayout from "./lib/MainLayout.svelte";
+    import { onMount } from 'svelte';
+    import Hud from './components/Hud.svelte';
+    import MainLayout from './components/MainLayout.svelte';
+    import { gameState } from './lib/stores/gameStore.svelte';
+    import { setupCacheReload, setupCanvasDraw } from './lib/stores/mapStore.svelte';
+
+    onMount(() => {
+        setupCanvasDraw();
+        setupCacheReload();
+        gameState.loadData();
+    });
 </script>
 
 <header>
@@ -8,14 +17,9 @@
 </header>
 
 <Hud />
-
-<div id='feedback'></div>
-
 <MainLayout />
 
 <style>
-    /* -- Header -- */
-
     header {
         width: 100%;
         max-width: 1200px;
@@ -32,17 +36,5 @@
         letter-spacing: 0.08em;
         text-transform: uppercase;
         color: var(--text);
-    }
-
-    /* -- Feedback bar -- */
-
-    #feedback {
-        width: 100%;
-        max-width: 1200px;
-        height: 18px;
-        font-family: var(--font-display);
-        font-size: 0.78rem;
-        letter-spacing: 0.04em;
-        margin-bottom: 6px;
     }
 </style>
