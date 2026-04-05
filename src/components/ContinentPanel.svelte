@@ -17,7 +17,6 @@
             .sort(([a], [b]) => a.localeCompare(b))
             .map(([continent, list]) => ({
                 continent,
-                // Sort countries once at initialization
                 countries: list.slice().sort((a, b) =>
                     a._label.localeCompare(b._label)
                 )

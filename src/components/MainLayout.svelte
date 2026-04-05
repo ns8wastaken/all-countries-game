@@ -1,26 +1,21 @@
 <script lang="ts">
     import ContinentPanel from './ContinentPanel.svelte';
+    import { gameState } from '../lib/stores/gameStore.svelte';
     import {
         isDragging,
-        dragStart,
-        dragMove,
-        dragEnd,
+        dragStart, dragMove, dragEnd,
         zoom,
-        setCanvasWidth,
+        initCanvas,
+        canvasReady,
     } from '../lib/stores/mapStore.svelte';
-    import { initCanvas } from '../lib/stores/mapStore.svelte';
-    import { gameState } from '../lib/stores/gameStore.svelte';
-    import { onMount } from 'svelte';
 
     let canvas: HTMLCanvasElement;
     let wrapperWidth = $state(0);
 
-    onMount(() => initCanvas(canvas, wrapperWidth))
-
+    // Update when wrapperWidth changes
     $effect(() => {
-        if (wrapperWidth > 0) {
-            setCanvasWidth(wrapperWidth);
-        }
+        if (!canvas || wrapperWidth === 0) return;
+        initCanvas(canvas, wrapperWidth);
     });
 
     // Handle zoom
@@ -43,7 +38,8 @@
             onmousedown={(e) => dragStart(e.clientX, e.clientY)}
             onwheel={handleWheel}
         ></canvas>
-        {#if gameState.loading}
+
+        {#if gameState.loading || !canvasReady.value}
             <div id="loading">loading map...</div>
         {/if}
     </div>

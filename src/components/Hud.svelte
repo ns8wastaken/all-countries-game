@@ -4,31 +4,38 @@
     const feedback = $state({ text: '', color: '' });
     let feedbackTimer: number;
 
-    function showFeedback(text: string, color: string) {
+    function showFeedback(text: string, color: string, time: number = 3000) {
         clearTimeout(feedbackTimer);
         feedback.text = text;
         feedback.color = color;
-        feedbackTimer = setTimeout(() => { feedback.text = ''; }, 5000);
+        feedbackTimer = setTimeout(() => { feedback.text = ''; }, time);
     }
 
     let inputValue = $state('');
 
-    function onInput(_e: Event) {
+    function onInput() {
         const res = gameState.guess(inputValue);
-        if (res) {
-            inputValue = '';
-            showFeedback('+1 ' + res._label, '#2ecc71');
-        }
+        if (!res) return;
+        inputValue = '';
+        showFeedback('+1  ' + res._label, 'var(--accent)');
+        if (gameState.complete)
+            showFeedback('You got them all!', 'var(--accent)');
     }
 
     function onGiveUp() {
         gameState.giveUp();
-        showFeedback('Better luck next time!', 'var(--muted)');
+        const missed = gameState.countryCount - gameState.foundCount;
+        showFeedback(
+            `${gameState.foundCount} / ${gameState.countryCount} — missed ${missed}`,
+            '#e07b39',
+            6000
+        );
     }
 
     function onReset() {
-        inputValue = '';
+        inputValue    = '';
         feedback.text = '';
+        clearTimeout(feedbackTimer);
         gameState.reset();
     }
 </script>

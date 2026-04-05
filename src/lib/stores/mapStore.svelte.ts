@@ -1,15 +1,22 @@
 import type { CachedPaths, DragState, GeoFeature, Transform } from '../types';
 import { ASPECT } from '../constants';
 import { gameState } from './gameStore.svelte';
+import { untrack } from 'svelte';
+import { THEMES } from '../themes';
 
 // --- State ---
+
+let activeTheme = $state(THEMES.vintage);
 
 let canvas: HTMLCanvasElement | null = null;
 let ctx: CanvasRenderingContext2D | null = null;
 
-export const canvasSize = $state({ w: 0, h: 0 });
+export const canvasReady = $state({ value: false });
 
-const transform = $state<Transform>({ x: 0, y: -200, scale: 1 });
+let W = 0;
+let H = 0;
+
+const transform = $state<Transform>({ x: 0, y: 0, scale: 1 });
 
 const drag = $state<DragState>({
     active: false,
@@ -19,94 +26,86 @@ const drag = $state<DragState>({
     ty: 0,
 });
 
+export function isDragging(): boolean { return drag.active };
+
 let cachedPaths = $state<CachedPaths>({
     default: new Path2D(),
     found:   new Path2D(),
     missed:  new Path2D(),
 });
 
-export function isDragging(): boolean { return drag.active };
-
-let pathVersion = $state(0);
-
 // --- Draw ---
 
-export function setupCanvasDraw() {
-    $effect(() => {
-        const { w, h } = canvasSize;
-        const { x, y, scale } = transform;
-        pathVersion; // read it just to cause update
+function render() {
+    if (!ctx || W === 0) return;
+    if (canvas) canvas.style.backgroundColor = activeTheme.background;
 
-        if (!ctx || w === 0 || h === 0) return;
+    ctx.clearRect(0, 0, W, H);
+    ctx.save();
+    ctx.scale(W, W);
+    ctx.translate(transform.x / W, transform.y / W);
+    ctx.scale(transform.scale, transform.scale);
 
-        ctx.clearRect(0, 0, w, h);
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.scale(scale, scale);
+    // Unseen countries
+    ctx.fillStyle   = activeTheme.default.fill;
+    ctx.strokeStyle = activeTheme.default.stroke;
+    ctx.lineWidth   = activeTheme.default.lineWidth / (transform.scale * W);
+    ctx.fill(cachedPaths.default, 'evenodd');
+    ctx.stroke(cachedPaths.default);
 
-        // Default (unseen) countries
-        ctx.fillStyle   = 'rgba(255,255,255,0.06)';
-        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-        ctx.lineWidth   = 0.5 / scale;
-        ctx.fill(cachedPaths.default);
-        ctx.stroke(cachedPaths.default);
+    // Found countries
+    ctx.fillStyle   = activeTheme.found.fill;
+    ctx.strokeStyle = activeTheme.found.stroke;
+    ctx.lineWidth   = activeTheme.found.lineWidth / (transform.scale * W);
+    ctx.fill(cachedPaths.found, 'evenodd');
+    ctx.stroke(cachedPaths.found);
 
-        // Found countries
-        ctx.fillStyle   = 'rgba(46,204,113,0.35)';
-        ctx.strokeStyle = 'rgba(46,204,113,0.7)';
-        ctx.lineWidth   = 0.8 / scale;
-        ctx.fill(cachedPaths.found);
-        ctx.stroke(cachedPaths.found);
+    // Missed countries
+    ctx.fillStyle   = activeTheme.missed.fill;
+    ctx.strokeStyle = activeTheme.missed.stroke;
+    ctx.lineWidth   = activeTheme.missed.lineWidth / (transform.scale * W);
+    ctx.fill(cachedPaths.missed, 'evenodd');
+    ctx.stroke(cachedPaths.missed);
 
-        // Missed countries (after give-up)
-        ctx.fillStyle   = 'rgba(192,57,43,0.25)';
-        ctx.strokeStyle = 'rgba(192,57,43,0.5)';
-        ctx.lineWidth   = 0.5 / scale;
-        ctx.fill(cachedPaths.missed);
-        ctx.stroke(cachedPaths.missed);
-
-        ctx.restore();
-    });
+    ctx.restore();
 }
 
-export function setupCacheReload() {
+export function setupMapEffects(): void {
+    // Effect 1: rebuild cached paths whenever game state changes
     $effect(() => {
         const { features, foundSet, gaveUp } = gameState;
-        if (features.length === 0) return;
-        rebuildCachedPaths(features, foundSet, gaveUp);
+        if (features.length === 0 || !canvasReady.value) return;
+
+        const def    = new Path2D();
+        const found  = new Path2D();
+        const missed = new Path2D();
+
+        features.forEach((f) => {
+            if (!f._path) return; // paths not built yet
+            if (foundSet.has(f._key))  found.addPath(f._path);
+            else if (gaveUp)           missed.addPath(f._path);
+            else                       def.addPath(f._path);
+        });
+
+        cachedPaths = { default: def, found, missed };
+    });
+
+    // Effect 2: draw whenever transform or cachedPaths changes
+    $effect(() => {
+        transform;
+        cachedPaths;
+        activeTheme;
+        render();
     });
 }
 
 // --- Logic ---
 
-export function mercator(lon: number, lat: number): [number, number] {
-    const x = (lon + 180) / 360 * canvasSize.w;
+function mercator(lon: number, lat: number): [number, number] {
+    const x = (lon + 180) / 360;
     const s = Math.sin(lat * Math.PI / 180);
-    const y = (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * canvasSize.w;
-    return [x, y];
-}
-
-export function setCanvasWidth(w: number): void {
-    const h = Math.round(w / ASPECT);
-
-    canvasSize.w = w;
-    canvasSize.h = h;
-
-    if (!canvas) return;
-    canvas.width  = w;
-    canvas.height = h;
-}
-
-export function initCanvas(el: HTMLCanvasElement, wrapperWidth: number): void {
-    canvas = el;
-    ctx = canvas.getContext('2d');
-
-    setCanvasWidth(wrapperWidth);
-
-    // Center the map vertically
-    transform.x = 0;
-    transform.y = 0;
-    transform.scale = 1;
+    const y = (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI));
+    return [x, y]; // normalized
 }
 
 function buildPath2D(geom: GeoFeature['geometry']): Path2D {
@@ -131,35 +130,29 @@ function buildPath2D(geom: GeoFeature['geometry']): Path2D {
     return path;
 }
 
-// Called after initCanvas()
-export function buildPaths(features: GeoFeature[]): void {
-    features.forEach((f) => {
+// Call once after loading data
+export function buildPaths(): void {
+    gameState.features.forEach((f) => {
         f._path = buildPath2D(f.geometry);
     });
 }
 
-export function rebuildCachedPaths(
-    features: GeoFeature[],
-    foundSet: Set<string>,
-    gaveUp: boolean
-): void {
-    const def    = new Path2D();
-    const found  = new Path2D();
-    const missed = new Path2D();
+export function initCanvas(el: HTMLCanvasElement, wrapperWidth: number): void {
+    canvas = el;
+    ctx = canvas.getContext('2d')!;
 
-    features.forEach((f) => {
-        if (foundSet.has(f._key))  found.addPath(f._path);
-        else if (gaveUp)           missed.addPath(f._path);
-        else                       def.addPath(f._path);
-    });
+    W = wrapperWidth;
+    H = Math.round(W / ASPECT);
 
-    // Assign all at once so the draw $effect only fires once.
-    cachedPaths.default = def;
-    cachedPaths.found   = found;
-    cachedPaths.missed  = missed;
+    canvas.width  = W;
+    canvas.height = H;
 
-    // Bump version to trigger the draw $effect
-    pathVersion++;
+    transform.x = 0;
+    transform.y = 0;
+    transform.scale = 1;
+
+    canvasReady.value = true;
+    untrack(render);
 }
 
 // --- Updates ---
@@ -170,8 +163,8 @@ export function zoom(
     canvasRect: DOMRect,
     deltaY: number
 ): void {
-    const mx = (clientX - canvasRect.left) * (canvasSize.w / canvasRect.width);
-    const my = (clientY - canvasRect.top)  * (canvasSize.h / canvasRect.height);
+    const mx = (clientX - canvasRect.left) * (W / canvasRect.width);
+    const my = (clientY - canvasRect.top)  * (H / canvasRect.height);
     const delta = deltaY > 0 ? 0.85 : 1.18;
 
     transform.x = mx + (transform.x - mx) * delta;

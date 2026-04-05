@@ -3,12 +3,11 @@
     import Hud from './components/Hud.svelte';
     import MainLayout from './components/MainLayout.svelte';
     import { gameState } from './lib/stores/gameStore.svelte';
-    import { setupCacheReload, setupCanvasDraw } from './lib/stores/mapStore.svelte';
+    import { buildPaths, setupMapEffects } from './lib/stores/mapStore.svelte';
 
     onMount(() => {
-        setupCanvasDraw();
-        setupCacheReload();
-        gameState.loadData();
+        setupMapEffects();
+        gameState.loadData().then(buildPaths);
     });
 </script>
 
