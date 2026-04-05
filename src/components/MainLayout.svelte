@@ -1,13 +1,7 @@
 <script lang="ts">
     import ContinentPanel from './ContinentPanel.svelte';
     import { gameState } from '../lib/stores/gameStore.svelte';
-    import {
-        isDragging,
-        dragStart, dragMove, dragEnd,
-        zoom,
-        initCanvas,
-        canvasReady,
-    } from '../lib/stores/mapStore.svelte';
+    import { mapRenderer } from '../lib/stores/mapStore.svelte';
 
     let canvas: HTMLCanvasElement;
     let wrapperWidth = $state(0);
@@ -15,36 +9,45 @@
     // Update when wrapperWidth changes
     $effect(() => {
         if (!canvas || wrapperWidth === 0) return;
-        initCanvas(canvas, wrapperWidth);
+        mapRenderer.init(canvas, wrapperWidth);
     });
 
     // Handle zoom
     function handleWheel(e: WheelEvent) {
         e.preventDefault();
-        zoom(e.clientX, e.clientY, canvas.getBoundingClientRect(), e.deltaY);
+        mapRenderer.zoom(e.clientX, e.clientY, canvas.getBoundingClientRect(), e.deltaY);
     }
 </script>
 
 <svelte:window
-    onmousemove={(e) => dragMove(e.clientX, e.clientY)}
-    onmouseup={dragEnd}
+    onmousemove={(e) => mapRenderer.dragMove(e.clientX, e.clientY)}
+    onmouseup={mapRenderer.dragEnd}
 />
 
 <div class="main-layout">
     <div bind:clientWidth={wrapperWidth} class="canvas-wrap">
         <canvas
             bind:this={canvas}
-            class:dragging={isDragging()}
-            onmousedown={(e) => dragStart(e.clientX, e.clientY)}
+            class:dragging={mapRenderer.isDragging}
+            onmousedown={(e) => mapRenderer.dragStart(e.clientX, e.clientY)}
             onwheel={handleWheel}
+            onmousemove={(e) =>
+                mapRenderer.handleMouseMove(e.clientX, e.clientY, canvas.getBoundingClientRect())
+            }
+            onmouseleave={mapRenderer.handleMouseLeave}
         ></canvas>
 
-        {#if gameState.loading || !canvasReady.value}
+        {#if gameState.loading || !mapRenderer.ready}
             <div id="loading">loading map...</div>
         {/if}
     </div>
 
-    <div id="hint">scroll to zoom &nbsp;·&nbsp; drag to pan</div>
+    <div id="canvas-footer">
+        <div class="hint">scroll to zoom &nbsp;·&nbsp; drag to pan</div>
+        <div class="hint country-display">
+            {mapRenderer.hoveredCountry ?? ''}
+        </div>
+    </div>
 
     <ContinentPanel />
 </div>
@@ -90,9 +93,23 @@
         background: var(--bg);
     }
 
-    #hint {
+    #canvas-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .hint {
         margin-bottom: 7px;
         font-size: 0.7rem;
         color: var(--muted);
+    }
+
+    .country-display {
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 </style>

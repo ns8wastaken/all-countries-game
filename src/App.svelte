@@ -3,11 +3,11 @@
     import Hud from './components/Hud.svelte';
     import MainLayout from './components/MainLayout.svelte';
     import { gameState } from './lib/stores/gameStore.svelte';
-    import { buildPaths, setupMapEffects } from './lib/stores/mapStore.svelte';
+    import { mapRenderer, setupMapEffects } from './lib/stores/mapStore.svelte';
 
     onMount(() => {
         setupMapEffects();
-        gameState.loadData().then(buildPaths);
+        gameState.loadData().then(mapRenderer.buildPaths);
     });
 </script>
 

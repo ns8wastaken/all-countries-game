@@ -17,7 +17,7 @@
         const res = gameState.guess(inputValue);
         if (!res) return;
         inputValue = '';
-        showFeedback('+1  ' + res._label, 'var(--accent)');
+        showFeedback('+1 ' + res._label, 'var(--accent)');
         if (gameState.complete)
             showFeedback('You got them all!', 'var(--accent)');
     }
