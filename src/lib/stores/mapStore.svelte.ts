@@ -199,7 +199,7 @@ class MapRenderer {
 
         this.#ctx.restore();
 
-        if (foundKey && gameState.foundSet.has(foundKey)) {
+        if (foundKey && gameState.foundSet.has(foundKey) || gameState.gaveUp) {
             this.hoveredCountry = foundLabel;
         } else {
             this.hoveredCountry = null;
