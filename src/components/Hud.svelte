@@ -1,78 +1,142 @@
 <script lang='ts'>
     import { gameState } from "../lib/stores/gameStore.svelte";
+    import { TimerType } from "../lib/types";
+
+    let seconds = $state(0);
+    let timerLimit = $state(900);
+    let timerMode: TimerType = $state(TimerType.Stopwatch);
+    let inputValue = $state('');
 
     const feedback = $state({ text: '', color: '' });
     let feedbackTimer: number;
 
-    function showFeedback(text: string, color: string, time: number = 3000) {
+    const isActive = $derived(!gameState.loading && !gameState.gaveUp && !gameState.complete);
+    const canPlay = $derived(isActive && !gameState.isPaused);
+
+    const currentSeconds = $derived(
+        timerMode === TimerType.Stopwatch
+            ? seconds
+            : timerLimit - seconds
+    );
+    const displayTime = $derived(`${Math.floor(currentSeconds / 60)}:${(currentSeconds % 60).toString().padStart(2, '0')}`);
+
+    function showFeedback(text: string, color: string, time = 3000) {
         clearTimeout(feedbackTimer);
         feedback.text = text;
         feedback.color = color;
-        feedbackTimer = setTimeout(() => { feedback.text = ''; }, time);
+        feedbackTimer = setTimeout(() => feedback.text = '', time);
     }
 
-    let inputValue = $state('');
+    $effect(() => {
+        if (canPlay && gameState.foundCount > 0) {
+            const interval = setInterval(() => {
+                seconds++;
+                // Auto-end if timer mode hits zero
+                if (timerMode === TimerType.Timer && currentSeconds <= 0) {
+                    onGiveUp();
+                    showFeedback("Time's up!", "#e07b39", 99999);
+                }
+            }, 1000);
+
+            const onHide = () => {
+                if (document.visibilityState === 'hidden') {
+                    gameState.isPaused = true;
+                    showFeedback('Game Paused (Tab Hidden)', 'var(--muted)', 99999);
+                }
+            };
+
+            document.addEventListener('visibilitychange', onHide);
+            return () => {
+                clearInterval(interval);
+                document.removeEventListener('visibilitychange', onHide);
+            };
+        }
+    });
+
+    function toggleMode() {
+        if (gameState.foundCount > 0) {
+            showFeedback(
+                'You incompetent baffoon, you shall not switch the mode whilst the game is afoot.',
+                '#e07b39'
+            );
+            return;
+        }; // Prevent switching mid-game
+        timerMode = timerMode === TimerType.Stopwatch
+            ? TimerType.Timer
+            : TimerType.Stopwatch;
+    }
 
     function onInput() {
         const res = gameState.guess(inputValue);
         if (!res) return;
+
         inputValue = '';
-        showFeedback('+1 ' + res._label, 'var(--accent)');
+        showFeedback(`+1 ${res._label}`, 'var(--accent)');
         if (gameState.complete)
             showFeedback('You got them all!', 'var(--accent)');
     }
 
+    function togglePause() {
+        gameState.isPaused = !gameState.isPaused;
+        showFeedback(
+            gameState.isPaused ? 'Game Paused' : 'Resumed!',
+            gameState.isPaused ? 'var(--muted)' : 'var(--accent)'
+        );
+    }
+
     function onGiveUp() {
         gameState.giveUp();
-        const missed = gameState.countryCount - gameState.foundCount;
         showFeedback(
-            `${gameState.foundCount} / ${gameState.countryCount} — missed ${missed}`,
+            `${gameState.foundCount} / ${gameState.countryCount} — missed ${gameState.countryCount - gameState.foundCount}`,
             '#e07b39',
-            6000
+            99999
         );
     }
 
     function onReset() {
-        inputValue    = '';
-        feedback.text = '';
-        clearTimeout(feedbackTimer);
+        inputValue = '';
+        seconds = 0;
+        showFeedback('', '');
         gameState.reset();
     }
 </script>
 
 <div class="hud">
+    <button
+        class="stat timer-stat"
+        onclick={toggleMode}
+        disabled={gameState.loading}
+        title={seconds === 0 ? "Click to switch Up/Down" : ""}
+    >
+        {timerMode === TimerType.Stopwatch ? 'Elapsed' : 'Remaining'}
+        <strong class:warning={timerMode === TimerType.Timer && currentSeconds < 30}>
+            {displayTime}
+        </strong>
+    </button>
+
+    <button onclick={togglePause} disabled={!isActive}>
+        {gameState.isPaused ? 'Resume' : 'Pause'}
+    </button>
+
     <input
         type="text"
-        id="country-input"
         bind:value={inputValue}
         oninput={onInput}
-        placeholder="type a country name..."
-        autocomplete="off"
-        spellcheck="false"
-        disabled={gameState.loading || gameState.gaveUp}
+        placeholder={gameState.isPaused ? "Paused..." : "type a country..."}
+        disabled={!canPlay}
+        autocomplete="off" spellcheck="false"
     >
 
-    <div class="stat">Found<strong id="count">
-        {gameState.foundCount}
-    </strong></div>
-    <div class="stat">Total<strong id="total">
-        {gameState.loading ? "—" : gameState.countryCount}
-    </strong></div>
+    <div class="stat">
+        Score
+        <strong>{gameState.foundCount} / {gameState.loading ? "—" : gameState.countryCount}</strong>
+    </div>
 
-    <button
-        id="give-up-btn"
-        onclick={onGiveUp}
-        disabled={gameState.loading || gameState.gaveUp}
-    >Give up</button>
-
-    <button
-        id="reset-btn"
-        onclick={onReset}
-        disabled={gameState.loading}
-    >Reset</button>
+    <button onclick={onGiveUp} disabled={!isActive}>Give up</button>
+    <button onclick={onReset} disabled={gameState.loading}>Reset</button>
 </div>
 
-<div id="feedback" style="color: {feedback.color}">
+<div id="feedback" style:color={feedback.color}>
     {feedback.text}
 </div>
 
@@ -101,13 +165,9 @@
         transition: border-color 0.15s;
     }
 
-    input[type="text"]:focus {
-        border-color: var(--accent);
-    }
-
-    input[type="text"]::placeholder {
-        color: var(--muted);
-    }
+    input[type="text"]:focus { border-color: var(--accent); }
+    input[type="text"]:disabled { background: rgba(0,0,0,0.05); cursor: not-allowed; }
+    input[type="text"]::placeholder { color: var(--muted); }
 
     .stat {
         background: var(--surface);

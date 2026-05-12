@@ -5,33 +5,53 @@
     import { gameState } from './lib/stores/gameStore.svelte';
     import { mapRenderer, setupMapEffects } from './lib/stores/mapStore.svelte';
     import { THEMES } from './lib/themes';
+    import { themeStore } from './lib/stores/themeStore.svelte';
 
     onMount(() => {
         setupMapEffects();
-        gameState.loadData().then(
-            mapRenderer.buildPaths
-        );
+        gameState
+            .loadData()
+            .then(mapRenderer.buildPaths);
     });
+
+    const themeVars = $derived(`
+        --bg: ${themeStore.current.background};
+        --surface: ${themeStore.current.surface};
+        --border: ${themeStore.current.border};
+        --text: ${themeStore.current.text};
+        --muted: ${themeStore.current.muted};
+        --accent: ${themeStore.current.accent};
+    `);
 </script>
 
-<header>
-    <h1>Country Guesser</h1>
+<div class="app-wrapper" style="{themeVars}; background-color: var(--bg); color: var(--text);">
+    <header>
+        <h1>Country Guesser</h1>
 
-    <div class="theme-picker">
-        <select bind:value={mapRenderer.theme}>
-            {#each Object.entries(THEMES) as [_key, theme]}
-                <option value={theme}>
-                    {theme.name}
-                </option>
-            {/each}
-        </select>
-    </div>
-</header>
+        <div class="theme-picker">
+            <select bind:value={themeStore.current}>
+                {#each Object.entries(THEMES) as [_key, theme]}
+                    <option value={theme}>
+                        {theme.name}
+                    </option>
+                {/each}
+            </select>
+        </div>
+    </header>
 
-<Hud />
-<MainLayout />
+    <Hud />
+    <MainLayout />
+</div>
 
 <style>
+    .app-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 1rem;
+        gap: 0;
+    }
+
     header {
         width: 100%;
         max-width: 1200px;

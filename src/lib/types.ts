@@ -29,3 +29,6 @@ export interface CachedPaths {
     found: Path2D;
     missed: Path2D;
 }
+
+export const TimerType = { Timer: 'timer', Stopwatch: 'stopwatch' } as const;
+export type TimerType = typeof TimerType[keyof typeof TimerType];

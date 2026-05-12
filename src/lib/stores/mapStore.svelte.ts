@@ -2,7 +2,7 @@ import type { CachedPaths, DragState, GeoFeature, Transform } from '../types';
 import { ASPECT } from '../constants';
 import { gameState } from './gameStore.svelte';
 import { untrack } from 'svelte';
-import { THEMES } from '../themes';
+import { themeStore } from './themeStore.svelte';
 
 // --- State ---
 
@@ -22,7 +22,6 @@ class MapRenderer {
 
     ready          = $state(false);
     isDragging     = $derived(this.#drag.active);
-    theme          = $state(THEMES.classic);
     hoveredCountry = $state<string | null>(null);
 
     init = (el: HTMLCanvasElement, wrapperWidth: number): void => {
@@ -101,7 +100,7 @@ class MapRenderer {
         const paths = this.#paths;
 
         if (!ctx || W === 0) return;
-        if (this.#canvas) this.#canvas.style.backgroundColor = this.theme.background;
+        if (this.#canvas) this.#canvas.style.backgroundColor = themeStore.current.background;
 
         ctx.clearRect(0, 0, W, H);
         ctx.save();
@@ -110,23 +109,23 @@ class MapRenderer {
         ctx.scale(scale, scale);
 
         // Unseen countries
-        ctx.fillStyle   = this.theme.default.fill;
-        ctx.strokeStyle = this.theme.default.stroke;
-        ctx.lineWidth   = this.theme.default.lineWidth / (scale * W);
+        ctx.fillStyle   = themeStore.current.default.fill;
+        ctx.strokeStyle = themeStore.current.default.stroke;
+        ctx.lineWidth   = themeStore.current.default.lineWidth / (scale * W);
         ctx.fill(paths.default, 'evenodd');
         ctx.stroke(paths.default);
 
         // Found countries
-        ctx.fillStyle   = this.theme.found.fill;
-        ctx.strokeStyle = this.theme.found.stroke;
-        ctx.lineWidth   = this.theme.found.lineWidth / (scale * W);
+        ctx.fillStyle   = themeStore.current.found.fill;
+        ctx.strokeStyle = themeStore.current.found.stroke;
+        ctx.lineWidth   = themeStore.current.found.lineWidth / (scale * W);
         ctx.fill(paths.found, 'evenodd');
         ctx.stroke(paths.found);
 
         // Missed countries
-        ctx.fillStyle   = this.theme.missed.fill;
-        ctx.strokeStyle = this.theme.missed.stroke;
-        ctx.lineWidth   = this.theme.missed.lineWidth / (scale * W);
+        ctx.fillStyle   = themeStore.current.missed.fill;
+        ctx.strokeStyle = themeStore.current.missed.stroke;
+        ctx.lineWidth   = themeStore.current.missed.lineWidth / (scale * W);
         ctx.fill(paths.missed, 'evenodd');
         ctx.stroke(paths.missed);
 

@@ -6,6 +6,7 @@ class GameState {
     foundSet   = $state(new Set<string>());
     foundCount = $state(0);
     gaveUp     = $state(false);
+    isPaused   = $state<boolean>(false);
     loading    = $state(true);
     loadError  = $state<string | null>(null);
 
@@ -40,6 +41,7 @@ class GameState {
         this.foundSet   = new Set();
         this.foundCount = 0;
         this.gaveUp     = false;
+        this.isPaused   = false;
     }
 
     async loadData(): Promise<void> {
