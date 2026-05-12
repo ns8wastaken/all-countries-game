@@ -205,6 +205,7 @@
     }
 
     button:hover {
+        /* TODO: Fix this (ts dont exist no more) */
         border-color: var(--border-hover);
         color: var(--text);
     }

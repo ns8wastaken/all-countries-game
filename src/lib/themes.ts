@@ -24,7 +24,7 @@ export const THEMES: Record<string, MapTheme> = {
         text:       '#ffffff',
         muted:      '#888888',
         accent:     '#2ecc71',
-        border:     'rgba(255,255,255,0.1)',
+        border:     'rgba(255, 255, 255, 0.1)',
 
         default: { fill: 'rgba(255,255,255,0.06)', stroke: 'rgba(255,255,255,0.18)', lineWidth: 0.5 },
         found:   { fill: 'rgba(46,204,113,0.35)',  stroke: 'rgba(46,204,113,0.7)',   lineWidth: 0.8 },
@@ -89,5 +89,20 @@ export const THEMES: Record<string, MapTheme> = {
         default: { fill: 'rgba(255, 255, 255, 0.05)', stroke: 'rgba(255, 255, 255, 0.2)', lineWidth: 0.5 },
         found:   { fill: '#fff',                      stroke: '#fff',                     lineWidth: 1.5 },
         missed:  { fill: 'rgba(255, 200, 0, 0.3)',    stroke: '#ffcc00',                  lineWidth: 0.8 },
+    },
+
+    high_contrast: {
+        name: 'High Contrast',
+
+        background: '#000',
+        surface:    'rgba(255, 255, 255, 0.05)',
+        text:       '#ffffff',
+        muted:      'rgba(255, 255, 255, 0.5)',
+        accent:     '#fff',
+        border:     'rgba(255, 255, 255, 0.2)',
+
+        default: { fill: '#ddd', stroke: '#aaa', lineWidth: 0.5 },
+        found:   { fill: '#0d0', stroke: '#fff', lineWidth: 1.5 },
+        missed:  { fill: '#d00', stroke: '#fff', lineWidth: 1.5 },
     }
 };

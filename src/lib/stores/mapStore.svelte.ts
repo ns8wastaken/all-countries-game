@@ -12,7 +12,7 @@ class MapRenderer {
     #W = 0;
     #H = 0;
 
-    #transform = $state<Transform>({ x: 0, y: -0.07, scale: 1 });
+    #transform = $state<Transform>({ x: 0, y: 0, scale: 1 });
     #drag      = $state<DragState>({ active: false, sx: 0, sy: 0, tx: 0, ty: 0 });
     #paths     = $state<CachedPaths>({
         default: new Path2D(),
@@ -35,7 +35,7 @@ class MapRenderer {
         this.#canvas.height = this.#H;
 
         this.#transform.x = 0;
-        this.#transform.y = 0;
+        this.#transform.y = -200;
         this.#transform.scale = 1;
 
         this.ready = true;
