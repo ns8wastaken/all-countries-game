@@ -146,7 +146,10 @@ class MapRenderer {
     zoom = (clientX: number, clientY: number, canvasRect: DOMRect, deltaY: number): void => {
         const mx = (clientX - canvasRect.left) * (this.#W / canvasRect.width);
         const my = (clientY - canvasRect.top)  * (this.#H / canvasRect.height);
-        const delta = deltaY > 0 ? 0.85 : 1.18;
+        const factor = Math.min(Math.abs(deltaY) / 100, 1);
+        const delta = deltaY > 0
+            ? 1 - factor * 0.15
+            : 1 + factor * 0.15;
 
         this.#transform.x = mx + (this.#transform.x - mx) * delta;
         this.#transform.y = my + (this.#transform.y - my) * delta;

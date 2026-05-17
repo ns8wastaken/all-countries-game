@@ -30,6 +30,7 @@ export const ALIASES: Record<string, string>  = {
     'st lucia': 'Saint Lucia',
     'st vincent': 'Saint Vincent and the Grenadines',
     'vatican city': 'Vatican',
+    'curacao': 'Curaçao',
 };
 
 // -- Projection constants ---------------------------------------------------
