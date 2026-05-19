@@ -1,6 +1,6 @@
 <script lang='ts'>
     import { onMount } from 'svelte';
-    import Hud from './components/Hud.svelte';
+    import TopBar from './components/TopBar.svelte';
     import MainLayout from './components/MainLayout.svelte';
     import { gameState } from './lib/stores/gameStore.svelte';
     import { mapRenderer, setupMapEffects } from './lib/stores/mapStore.svelte';
@@ -13,18 +13,9 @@
             .loadData()
             .then(mapRenderer.buildPaths);
     });
-
-    const themeVars = $derived(`
-        --bg: ${themeStore.current.background};
-        --surface: ${themeStore.current.surface};
-        --border: ${themeStore.current.border};
-        --text: ${themeStore.current.text};
-        --muted: ${themeStore.current.muted};
-        --accent: ${themeStore.current.accent};
-    `);
 </script>
 
-<div class="app-wrapper" style="{themeVars}; background-color: var(--bg); color: var(--text);">
+<div class="app-wrapper" style="{themeStore.cssVars}; background-color: var(--bg); color: var(--text);">
     <header>
         <h1>Country Guesser</h1>
 
@@ -39,7 +30,7 @@
         </div>
     </header>
 
-    <Hud />
+    <TopBar />
     <MainLayout />
 </div>
 

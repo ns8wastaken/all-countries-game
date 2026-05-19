@@ -16,3 +16,59 @@
 body {
     font-family: var(--font-body);
 }
+
+/* ----------------------------------------------------- */
+/* --- Button ------------------------------------------ */
+/* ----------------------------------------------------- */
+button {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.55rem 1rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+button:hover:not(:disabled) {
+    border-color: var(--border-hover);
+    color: var(--text);
+}
+
+button:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+/* ----------------------------------------------------- */
+/* --- Container --------------------------------------- */
+/* ----------------------------------------------------- */
+.container {
+    display: inline-flex;
+    align-items: center;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.35rem 0.6rem;
+    gap: 6px;
+    user-select: none;
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
+
+    transition: all 0.15s;
+}
+
+.container[aria-disabled="true"] {
+    opacity: 0.3;
+    cursor: default;
+    pointer-events: none;
+}

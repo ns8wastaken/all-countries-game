@@ -11,7 +11,7 @@
         mapRenderer.init(canvas, wrapperWidth);
     });
 
-    // ─── Input source tracking ────────────────────────────────────────────────
+    // --- Input source tracking ------------------------------------------------
     // Prevents synthesized mouse events from firing after touch interactions
     let lastInputWasTouch = false;
     let touchEndTimer: ReturnType<typeof setTimeout> | null = null;
@@ -23,7 +23,7 @@
         touchEndTimer = setTimeout(() => { lastInputWasTouch = false; }, 500);
     }
 
-    // ─── DESKTOP MOUSE ────────────────────────────────────────────────────────
+    // --- Desktop mouse --------------------------------------------------------
 
     function handleMouseDown(e: MouseEvent) {
         if (lastInputWasTouch) return;
@@ -46,7 +46,7 @@
         mapRenderer.zoom(e.clientX, e.clientY, canvas.getBoundingClientRect(), e.deltaY);
     }
 
-    // ─── MOBILE TOUCH ─────────────────────────────────────────────────────────
+    // --- Mobile touch ---------------------------------------------------------
 
     // Gesture state machine
     type TouchGesture = 'idle' | 'drag' | 'pinch' | 'double-tap-zoom';
