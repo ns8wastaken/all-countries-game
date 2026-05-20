@@ -39,14 +39,14 @@
                 seconds++;
                 if (timerMode === TimerType.Timer && currentSeconds <= 0) {
                     ongiveup();
-                    onfeedback("Time's up!", "#e07b39", 99999);
+                    onfeedback("Time's up!", "var(--warning)", 99999);
                 }
             }, 1000);
 
             const onHide = () => {
                 if (document.visibilityState === 'hidden') {
                     isPaused = true;
-                    onfeedback('Game Paused (Tab Hidden)', 'var(--muted)', 99999);
+                    onfeedback('Game Paused (Tab Hidden)', 'var(--text-muted)', 99999);
                 }
             };
 
@@ -62,7 +62,7 @@
         if (foundCount > 0) {
             onfeedback(
                 'You incompetent buffoon, you shall not switch the mode whilst the game is afoot.',
-                '#e07b39'
+                'var(--warning)'
             );
             return;
         }
@@ -73,7 +73,7 @@
         isPaused = !isPaused;
         onfeedback(
             isPaused ? 'Game Paused' : 'Resumed!',
-            isPaused ? 'var(--muted)' : 'var(--accent)'
+            isPaused ? 'var(--text-muted)' : 'var(--success)'
         );
     }
 
@@ -99,7 +99,6 @@
     </div>
 
     <button
-        class="action-btn"
         onclick={(e) => { e.stopPropagation(); togglePause(); }}
         disabled={!isActive}
     >
@@ -135,25 +134,25 @@
         }
 
         strong.warning {
-            color: #e07b39;
+            color: var(--warning);
         }
     }
 
-    .action-btn {
-        background: rgba(255, 255, 255, 0.075);
-        padding: 0.55rem 0.8rem;
+    button {
+        background: var(--border);
         border: 0px solid var(--border);
         border-radius: 4px;
-        color: var(--muted);
+        padding: 0.55rem 0.8rem;
+        color: var(--text-muted);
         cursor: pointer;
     }
 
-    .action-btn:hover:not(:disabled) {
-        background: rgba(255, 255, 255, 0.225);
+    button:hover:not(:disabled) {
+        background: var(--border-hover);
         color: var(--text);
     }
 
-    .action-btn:disabled {
+    button:disabled {
         opacity: 0.3;
         cursor: default;
     }

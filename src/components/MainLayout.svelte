@@ -203,11 +203,6 @@
 </div>
 
 <style>
-    canvas {
-        touch-action: none;
-        user-select: none;
-        -webkit-user-select: none;
-    }
     .main-layout {
         width: 100%;
         max-width: 1200px;
@@ -225,8 +220,9 @@
     }
 
     canvas {
-        display: block;
-        width: 100%;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
         cursor: grab;
     }
 
@@ -242,7 +238,7 @@
         justify-content: center;
         font-family: var(--font-display);
         font-size: 0.75rem;
-        color: var(--muted);
+        color: var(--text-muted);
         letter-spacing: 0.08em;
         text-transform: uppercase;
         background: var(--bg);
@@ -258,12 +254,12 @@
     .hint {
         margin-bottom: 7px;
         font-size: 0.7rem;
-        color: var(--muted);
+        color: var(--text-muted);
     }
 
     .country-display {
         font-weight: 600;
-        color: var(--accent);
+        color: var(--success);
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }

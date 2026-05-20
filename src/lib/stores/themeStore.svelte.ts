@@ -7,10 +7,22 @@ class ThemeStore {
         return `
             --bg: ${this.current.background};
             --surface: ${this.current.surface};
+            --surface-hover: ${this.current.surfaceHover};
             --border: ${this.current.border};
+            --border-hover: ${this.current.borderHover};
+
             --text: ${this.current.text};
-            --muted: ${this.current.muted};
-            --accent: ${this.current.accent};
+            --text-muted: ${this.current.textMuted};
+            --warning: ${this.current.warning};
+
+            --success: ${this.current.success};
+            --success-container: ${this.current.successContainer};
+            --success-outline: ${this.current.successOutline};
+
+            --danger: ${this.current.error};
+            --danger-hover: ${this.current.errorHover};
+            --error-container: ${this.current.errorContainer};
+            --error-outline: ${this.current.errorOutline};
         `;
     }
 }

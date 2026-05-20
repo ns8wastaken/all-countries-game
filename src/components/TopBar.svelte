@@ -23,16 +23,16 @@
         if (!res) return;
 
         inputValue = '';
-        showFeedback(`+1 ${res._label}`, 'var(--accent)');
+        showFeedback(`+1 ${res._label}`, 'var(--success)');
         if (gameState.complete)
-            showFeedback('You got them all!', 'var(--accent)');
+            showFeedback('You got them all!', 'var(--success)');
     }
 
     function onGiveUp() {
         gameState.giveUp();
         showFeedback(
             `${gameState.foundCount} / ${gameState.countryCount} — missed ${gameState.countryCount - gameState.foundCount}`,
-            '#e07b39',
+            'var(--warning)',
             99999
         );
     }
@@ -71,7 +71,7 @@
         <strong>{gameState.foundCount} / {gameState.loading ? "—" : gameState.countryCount}</strong>
     </div>
 
-    <div class="container">
+    <div class="container button-container">
         <button onclick={onGiveUp} disabled={!isActive}>Give up</button>
         <button onclick={onReset} disabled={gameState.loading}>Reset</button>
     </div>
@@ -82,6 +82,18 @@
 </div>
 
 <style>
+    button {
+        padding: 0.6rem 1rem;
+        background: var(--error-container);
+        border-color: var(--error-outline);
+        color: var(--danger);
+    }
+
+    button:hover {
+        background: var(--error-container);
+        border-color: var(--error-outline);
+    }
+
     .hud {
         width: 100%;
         max-width: 1200px;
@@ -107,9 +119,18 @@
         margin: 10px 0;
     }
 
-    input[type="text"]:focus { border-color: var(--accent); }
-    input[type="text"]:disabled { background: rgba(0,0,0,0.05); cursor: not-allowed; }
-    input[type="text"]::placeholder { color: var(--muted); }
+    input[type="text"]:focus {
+        border-color: var(--success);
+    }
+
+    input[type="text"]:disabled {
+        background: var(--background);
+        cursor: not-allowed;
+    }
+
+    input[type="text"]::placeholder {
+        color: var(--text-muted);
+    }
 
     .container {
         display: block;
@@ -122,6 +143,10 @@
             font-weight: 500;
             color: var(--text);
         }
+    }
+
+    .button-container {
+        padding: 0.35rem 0.5rem;
     }
 
     #feedback {

@@ -39,7 +39,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 2rem 1rem;
+        padding: 2rem 2.5rem;
         gap: 0;
     }
 
@@ -65,7 +65,7 @@
         background: none;
         border: 1px solid var(--border);
         border-radius: 4px;
-        color: var(--muted);
+        color: var(--text-muted);
         font-family: var(--font-display);
         font-size: 0.65rem;
         text-transform: uppercase;
@@ -77,12 +77,12 @@
     }
 
     .theme-picker select:hover {
-        border-color: var(--accent);
+        border-color: var(--success);
         color: var(--text);
     }
 
     .theme-picker select option {
-        background: #1a1a1a; /* Dark background for the dropdown menu */
+        background: var(--surface);
         color: white;
     }
 </style>

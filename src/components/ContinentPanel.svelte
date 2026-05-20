@@ -92,13 +92,13 @@
         font-weight: 500;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: var(--muted);
+        color: var(--text-muted);
     }
 
     .continent-progress {
         font-family: var(--font-display);
         font-size: 0.65rem;
-        color: var(--muted);
+        color: var(--text-muted);
     }
 
     .country-grid {
@@ -123,16 +123,16 @@
     }
 
     .country-pill.found {
-        background: rgba(46, 204, 113, 0.12);
-        border-color: rgba(46, 204, 113, 0.3);
-        color: var(--accent);
+        background: var(--success-container);
+        border-color: var(--success-outline);
+        color: var(--success);
         animation: pop 0.2s ease;
     }
 
     .country-pill.missed {
-        background: rgba(192, 57, 43, 0.12);
-        border-color: rgba(192, 57, 43, 0.3);
-        color: #e07b7b;
+        background: var(--error-container);
+        border-color: var(--error-outline);
+        color: var(--danger);
     }
 
     @keyframes pop {

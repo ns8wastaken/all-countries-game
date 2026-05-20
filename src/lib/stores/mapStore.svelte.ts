@@ -109,23 +109,23 @@ class MapRenderer {
         ctx.scale(scale, scale);
 
         // Unseen countries
-        ctx.fillStyle   = themeStore.current.default.fill;
-        ctx.strokeStyle = themeStore.current.default.stroke;
-        ctx.lineWidth   = themeStore.current.default.lineWidth / (scale * W);
+        ctx.fillStyle   = themeStore.current.map.default.fill;
+        ctx.strokeStyle = themeStore.current.map.default.stroke;
+        ctx.lineWidth   = themeStore.current.map.default.lineWidth / (scale * W);
         ctx.fill(paths.default, 'evenodd');
         ctx.stroke(paths.default);
 
         // Found countries
-        ctx.fillStyle   = themeStore.current.found.fill;
-        ctx.strokeStyle = themeStore.current.found.stroke;
-        ctx.lineWidth   = themeStore.current.found.lineWidth / (scale * W);
+        ctx.fillStyle   = themeStore.current.map.found.fill;
+        ctx.strokeStyle = themeStore.current.map.found.stroke;
+        ctx.lineWidth   = themeStore.current.map.found.lineWidth / (scale * W);
         ctx.fill(paths.found, 'evenodd');
         ctx.stroke(paths.found);
 
         // Missed countries
-        ctx.fillStyle   = themeStore.current.missed.fill;
-        ctx.strokeStyle = themeStore.current.missed.stroke;
-        ctx.lineWidth   = themeStore.current.missed.lineWidth / (scale * W);
+        ctx.fillStyle   = themeStore.current.map.missed.fill;
+        ctx.strokeStyle = themeStore.current.map.missed.stroke;
+        ctx.lineWidth   = themeStore.current.map.missed.lineWidth / (scale * W);
         ctx.fill(paths.missed, 'evenodd');
         ctx.stroke(paths.missed);
 
