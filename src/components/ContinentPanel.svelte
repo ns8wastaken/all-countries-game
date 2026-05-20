@@ -132,7 +132,7 @@
     .country-pill.missed {
         background: var(--error-container);
         border-color: var(--error-outline);
-        color: var(--danger);
+        color: var(--error);
     }
 
     @keyframes pop {

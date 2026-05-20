@@ -86,7 +86,7 @@
         padding: 0.6rem 1rem;
         background: var(--error-container);
         border-color: var(--error-outline);
-        color: var(--danger);
+        color: var(--error);
     }
 
     button:hover {

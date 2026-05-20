@@ -19,8 +19,8 @@ class ThemeStore {
             --success-container: ${this.current.successContainer};
             --success-outline: ${this.current.successOutline};
 
-            --danger: ${this.current.error};
-            --danger-hover: ${this.current.errorHover};
+            --error: ${this.current.error};
+            --error-hover: ${this.current.errorHover};
             --error-container: ${this.current.errorContainer};
             --error-outline: ${this.current.errorOutline};
         `;
